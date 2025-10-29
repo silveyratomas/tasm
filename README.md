@@ -17,7 +17,7 @@ Dibuja y explica la arquitectura Cliente‑Servidor: componentes, flujo de comun
 - CDN: entrega de activos estáticos (CSS/JS/Imagenes) desde ubicaciones geograficamente cercanas.
 - Monitoreo/Observability: Prometheus, Grafana, logs y alertas para salud y diagnostico.
 
-### Flujo de comunicación (resumen)
+### Flujo de comunicación
 1. El cliente resuelve el nombre (DNS) y establece conexión TCP/TLS con el servidor (HTTPS).
 2. El cliente envía una petición HTTPs al balanceador o al servidor web.
 3. El servidor web puede servir contenido estático directamente o reenviar la petición al app server.
@@ -25,7 +25,7 @@ Dibuja y explica la arquitectura Cliente‑Servidor: componentes, flujo de comun
 5. El app server genera la respuesta HTTP que retorna al cliente.
 6. El cliente recibe, renderiza y aprovecha caché/localStorage; conexiones keep‑alive y HTTP/2 optimizan las transferencias.
 
-### Protocolos involucrados (clarificado)
+### Protocolos involucrados
 - DNS — resolución de nombres.
 - TCP/IP y UDP — transporte a bajo nivel.
 - TLS (sobre TCP) — cifrado y seguridad (HTTPS).
@@ -195,8 +195,6 @@ echo 'Gracias por suscribirte.';
 ---
 
 ### Ejemplo 
-
-Si necesitas la versión más simple (sin base de datos), aquí tienes un ejemplo mínimo que muestra cómo enviar un formulario y recibir una respuesta del servidor.
 
 ```html
 <!-- form_simple.html -->
