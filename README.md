@@ -1,4 +1,226 @@
-# FoodExpress - guia rapida y en palabras simples
+## RUTA A: "El Arquitecto Web"
+
+---
+
+## Desafío 1 — Arquitectura Cliente‑Servidor 
+
+### Objetivo
+Dibuja y explica la arquitectura Cliente‑Servidor: componentes, flujo de comunicación, protocolos y un ejemplo práctico.
+
+### Componentes principales
+- Cliente: navegador o app (renderiza, solicita recursos y consume APIs).
+- Red: DNS, routers, firewalls y redes CDN.
+- Balanceador de carga: distribuye trafico entre servidores.
+- Servidor web: Nginx/Apache — maneja SSL, sirve contenido estático y proxy hacia la app.
+- App server: logica de negocio (Node.js, PHP, Java, etc.).
+- Base de datos: persistencia (MySQL, PostgreSQL, MongoDB).
+- CDN: entrega de activos estáticos (CSS/JS/Imagenes) desde ubicaciones geograficamente cercanas.
+- Monitoreo/Observability: Prometheus, Grafana, logs y alertas para salud y diagnostico.
+
+### Flujo de comunicación (resumen)
+1. El cliente resuelve el nombre (DNS) y establece conexión TCP/TLS con el servidor (HTTPS).
+2. El cliente envía una petición HTTPs al balanceador o al servidor web.
+3. El servidor web puede servir contenido estático directamente o reenviar la petición al app server.
+4. El app server procesa la lógica, consulta caché (Redis) o la base de datos si hace falta.
+5. El app server genera la respuesta HTTP que retorna al cliente.
+6. El cliente recibe, renderiza y aprovecha caché/localStorage; conexiones keep‑alive y HTTP/2 optimizan las transferencias.
+
+### Protocolos involucrados (clarificado)
+- DNS — resolución de nombres.
+- TCP/IP y UDP — transporte a bajo nivel.
+- TLS (sobre TCP) — cifrado y seguridad (HTTPS).
+- HTTP/HTTPS — protocolo de aplicación para APIs y páginas.
+- SFTP/SSH — administración remota y transferencia segura de archivos.
+- FTP — protocolo antiguo de transferencia.
+- SMTP — envío de correosy notifications.
+
+Nota: preferir siempre SFTP/FTPS sobre FTP para transferencia segura.
+
+### Ejemplo práctico — e‑commerce simple
+
+Arquitectura típica:
+- DNS → CDN (activos estáticos)
+- DNS → Balanceador (443) → Nginx (SSL/terminación TLS) → App server (Node/PHP)
+- App server → Redis (cache) / MySQL (datos) → Almacenamiento de objetos (S3 o compatible)
+
+Casos de uso:
+- El catálogo se sirve desde cache/CDN para reducir latencia.
+- Checkout requiere llamadas seguras al app server y persistencia en la base de datos.
+- Notificaciones en tiempo real ( estado del pedido) mediante WebSocket.
+
+---
+
+## Desafío 2 — Selectores: clase vs ID en CSS 
+
+### Cuando usar cada uno
+- ID (#id): usar solo para elementos únicos en la página (p. ej. root del modal, header principal). Tiene alta especificidad.
+- Clase (.clase): usar para estilos reutilizables y componentes (botones, tarjetas, layout). Más flexible y reutilizable.
+
+### Nivel de especificidad
+- ID tiene mayor especificidad que una clase. Evita abusar de IDs para estilos que necesiten ser sobrescritos; prefiere clases y utilidades.
+
+### Ejemplos prácticos (2 de cada uno)
+
+IDs (casos de uso reales)
+1) Header principal
+
+```html
+<header id="site-header">
+  <h1>Mi tienda</h1>
+</header>
+```
+
+```css
+#site-header { background:#123456; color:#fff; padding:16px; }
+```
+
+2) Contenedor único de modal
+
+```html
+<div id="modal-root"></div>
+```
+
+```css
+#modal-root { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+```
+
+Clases (reutilizables)
+1) Botones
+
+```html
+<button class="btn primary">Comprar</button>
+```
+
+```css
+.btn { padding:8px 12px; border-radius:4px; border:none; cursor:pointer; }
+.btn.primary { background:#0a74da; color:#fff; }
+```
+
+2) Tarjeta de producto
+
+```html
+<div class="card product-card">…</div>
+```
+
+```css
+.card { box-shadow:0 2px 8px rgba(0,0,0,.1); padding:12px; border-radius:6px; }
+.product-card { display:flex; gap:12px; }
+```
+
+---
+
+## Desafío 3 — Variables en JavaScript 
+
+### Proposito y utilidad
+- Guardar valores para reutilizar, controlar estado, y pasar información entre funciones y módulos.
+
+### Diferencias: var, let y const
+- var: ambito de función, hoisting (declaración elevada), inicializada como undefined; puede causar sobrescritura accidental.
+- let:ambito de bloque, hoisted pero en Temporal Dead Zone hasta su inicialización; reasignable.
+- const: ambito de bloque, debe inicializarse al declarar, no permite reasignar la referencia (pero objetos/arrays internos siguen siendo mutables).
+
+### Ejemplos (scope y hoisting)
+
+1) var (hoisting)
+
+```javascript
+console.log(x); // undefined
+var x = 1;
+```
+
+2) let (Temporal Dead Zone o zona muerta)
+
+```javascript
+console.log(() => { try { console.log(y); } catch(e) { console.log('TDZ:', e.message); }
+  let y = 2; })();
+```
+
+3) ámbito de bloque vs función
+
+```javascript
+if (true) {
+  let a = 1;
+  var b = 2;
+}
+console.log(typeof a); // 'undefined' (no existe fuera del bloque)
+console.log(b); // 2 (var se elevó al scope de función/global)
+```
+
+---
+
+## Desafío 4 — Introducción a PHP (5 puntos)
+
+### que es php y cual es su rol
+- PHP es un lenguaje de scripting del lado servidor para generar HTML dinámico, procesar formularios, gestionar sesiones y conectarse a bases de datos.
+
+### caracateristicas principales
+- Ejecucion en servidor, facil integracion con HTML, soporte para OOP, amplia comunidad y ecosistema (paquetes y frameworks), uso comun en LAMP/LEMP.
+
+### diferencias con lengujaes front end
+- PHP corre en servidor y no en el navegador: maneja logica de negocio, acceso a base de datos y archivos. JS frontend manipula el DOM y la experiencia del usuario en el cliente.
+
+### Ejemplo seguro de procesamiento de formulario (HTML + PHP con PDO)
+
+```html
+<!-- form.html -->
+<form method="post" action="procesar.php">
+  <label>email: <input type="email" name="email" required></label>
+  <button type="submit">enviar</button>
+</form>
+```
+
+```php
+<?php
+// procesar.php
+try {
+    $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo 'Error de conexión';
+    exit;
+}
+
+$email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+if (!$email) {
+    echo 'Email inválido';
+    exit;
+}
+
+$stmt = $pdo->prepare('INSERT INTO subscribers (email, created_at) VALUES (:email, NOW())');
+$stmt->execute([':email' => $email]);
+echo 'Gracias por suscribirte.';
+?>
+```
+
+---
+
+### Ejemplo 
+
+Si necesitas la versión más simple (sin base de datos), aquí tienes un ejemplo mínimo que muestra cómo enviar un formulario y recibir una respuesta del servidor.
+
+```html
+<!-- form_simple.html -->
+<form method="post" action="procesar_simple.php">
+  <label>Nombre: <input type="text" name="nombre" placeholder="Tu nombre"></label>
+  <button type="submit">Enviar</button>
+</form>
+```
+
+```php
+<?php
+// procesar_simple.php
+$nombre = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
+if ($nombre === '') {
+    echo 'Por favor, introduce tu nombre.';
+    exit;
+}
+// Escapar para evitar XSS al mostrar en la página
+$nombre_seguro = htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8');
+echo "Hola, " . $nombre_seguro . "! Hemos recibido tu formulario.";
+?>
+```
+
+# FoodExpress - guia
 
 Que hay en el repo
 
